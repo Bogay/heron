@@ -1,8 +1,3 @@
-#![deny(future_incompatible, nonstandard_style)]
-#![warn(missing_docs, rust_2018_idioms, clippy::pedantic)]
-#![allow(clippy::needless_pass_by_value, clippy::needless_doctest_main)]
-#![cfg(any(dim2, dim3))]
-
 //! An ergonomic physics API for 2d and 3d [bevy] games. (powered by [rapier])
 //!
 //! [bevy]: https://bevyengine.org
@@ -126,6 +121,11 @@
 //! * How to listen to [`CollisionEvent`]
 //! * How to define [`RotationConstraints`]
 //! * How to define [`CustomCollisionShape`] for [`heron_rapier`]
+
+#![deny(future_incompatible, nonstandard_style)]
+#![warn(missing_docs, rust_2018_idioms, clippy::pedantic)]
+#![allow(clippy::needless_pass_by_value, clippy::needless_doctest_main)]
+#![cfg(any(dim2, dim3))]
 
 use bevy::app::{App, Plugin};
 

@@ -1,5 +1,6 @@
 use bevy::ecs::component::Component;
 use bevy::math::{Vec2, Vec3};
+use bevy::prelude::Resource;
 
 /// Resource that defines world's gravity.
 ///
@@ -17,7 +18,7 @@ use bevy::math::{Vec2, Vec3};
 ///         .run();
 /// }
 /// ```
-#[derive(Debug, Component, Copy, Clone, PartialEq)]
+#[derive(Resource, Debug, Component, Copy, Clone, PartialEq)]
 pub struct Gravity(Vec3);
 
 impl Gravity {

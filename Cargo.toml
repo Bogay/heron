@@ -4,7 +4,7 @@ members = ["core", "rapier", "macros", "debug"]
 [package]
 name = "heron"
 version = "3.0.0"
-rust-version = "1.60"
+rust-version = "1.73"
 edition = "2021"
 authors = ["Jonathan Cornaz"]
 license = "MIT"
@@ -25,15 +25,24 @@ debug-2d = ["2d", "heron_debug/2d"]
 debug-3d = ["3d", "heron_debug/3d"]
 enhanced-determinism = ["heron_rapier/enhanced-determinism"]
 
+[workspace.dependencies]
+bevy = { version = "0.11.0", default-features = false }
+
 [dependencies]
 heron_core = { version = "3.0.0", path = "core" }
 heron_macros = { version = "3.0.0", path = "macros" }
 heron_rapier = { version = "3.0.0", path = "rapier" }
 heron_debug = { version = "3.0.0", path = "debug", optional = true }
-bevy = { version = "0.8.0", default-features = false }
+bevy = { workspace = true }
 
 [dev-dependencies]
-bevy = { version = "0.8.0", default-features = false, features=["bevy_sprite", "bevy_render", "bevy_core_pipeline", "x11", "bevy_pbr"] }
+bevy = { version = "0.11.0", default-features = false, features = [
+    "bevy_sprite",
+    "bevy_render",
+    "bevy_core_pipeline",
+    "x11",
+    "bevy_pbr",
+] }
 rstest = "0.16"
 
 [build-dependencies]

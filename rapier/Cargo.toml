@@ -15,11 +15,14 @@ all-features = true
 default = []
 2d = ["rapier2d"]
 3d = ["rapier3d", "heron_core/3d"]
-enhanced-determinism = ["rapier2d?/enhanced-determinism", "rapier3d?/enhanced-determinism"]
+enhanced-determinism = [
+    "rapier2d?/enhanced-determinism",
+    "rapier3d?/enhanced-determinism",
+]
 
 [dependencies]
 heron_core = { version = "3.0.0", path = "../core" }
-bevy = { version = "0.8.0", default-features = false }
+bevy = { workspace = true }
 rapier2d = { version = "0.13.0", optional = true }
 rapier3d = { version = "0.13.0", optional = true }
 fnv = "1.0"

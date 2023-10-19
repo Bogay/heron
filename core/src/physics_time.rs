@@ -1,3 +1,5 @@
+use bevy::prelude::Resource;
+
 /// Resource that controls the physics time scale
 ///
 /// # Example
@@ -14,7 +16,7 @@
 ///         .run();
 /// }
 /// ```
-#[derive(Debug, Copy, Clone)]
+#[derive(Resource, Debug, Copy, Clone)]
 pub struct PhysicsTime {
     /// Specify the physics emulation time scale used
     scale: f32,

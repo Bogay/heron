@@ -10,8 +10,10 @@ use bevy::prelude::*;
 /// This resource is used to tune the precision and performance of the physics system.
 /// It doesn't change the speed of the simulation.
 /// To change the time scale, look at the [`PhysicsTime`](crate::PhysicsTime) resource instead.
+#[derive(Resource, Debug)]
 pub struct PhysicsSteps(Mode);
 
+#[derive(Debug)]
 enum Mode {
     MaxDeltaTime(Duration),
     EveryFrame(Duration),
@@ -65,7 +67,7 @@ impl PhysicsSteps {
         );
         Self(Mode::Timer(Timer::from_seconds(
             1.0 / steps_per_second,
-            true,
+            TimerMode::Repeating,
         )))
     }
 
@@ -82,7 +84,7 @@ impl PhysicsSteps {
     #[must_use]
     pub fn from_delta_time(duration: Duration) -> Self {
         assert_ne!(!duration.as_nanos(), 0, "Invalid duration: {:?}", duration);
-        Self(Mode::Timer(Timer::new(duration, true)))
+        Self(Mode::Timer(Timer::new(duration, TimerMode::Repeating)))
     }
 
     /// Configure the physics systems to run at each and every frame, advancing the simulation the

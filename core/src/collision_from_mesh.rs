@@ -133,7 +133,9 @@ fn recursive_scene_children(
 mod tests {
     use bevy::{
         asset::AssetPlugin,
-        core::CorePlugin,
+        core::FrameCountPlugin,
+        core::TaskPoolPlugin,
+        core::TypeRegistrationPlugin,
         prelude::shape::{Capsule, Cube},
         render::{settings::WgpuSettings, RenderPlugin},
         window::WindowPlugin,
@@ -146,14 +148,19 @@ mod tests {
 
     impl Plugin for HeadlessRenderPlugin {
         fn build(&self, app: &mut App) {
-            app.insert_resource(WgpuSettings {
-                backends: None,
-                ..WgpuSettings::default()
-            })
-            .add_plugin(CorePlugin::default())
-            .add_plugin(WindowPlugin::default())
-            .add_plugin(AssetPlugin::default())
-            .add_plugin(RenderPlugin::default());
+            app.add_plugins((
+                WindowPlugin::default(),
+                AssetPlugin::default(),
+                RenderPlugin {
+                    wgpu_settings: WgpuSettings {
+                        backends: None,
+                        ..WgpuSettings::default()
+                    },
+                },
+                TaskPoolPlugin::default(),
+                TypeRegistrationPlugin::default(),
+                FrameCountPlugin::default(),
+            ));
         }
     }
 
@@ -184,13 +191,12 @@ mod tests {
 
         let parent = app
             .world
-            .spawn()
-            .insert(REQUESTED_COLLISION)
+            .spawn(REQUESTED_COLLISION)
             .insert(BODY_TYPE)
             .insert(COLLISION_LAYERS)
             .with_children(|parent| {
-                parent.spawn().insert(cube);
-                parent.spawn().insert(capsule);
+                parent.spawn(cube);
+                parent.spawn(capsule);
             })
             .id();
 

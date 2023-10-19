@@ -74,7 +74,7 @@ pub(super) fn update_collisions_system(
 /// entity deletion doesn't emit [`CollisionEvent::Stopped`].
 /// It's an upstream [issue](https://github.com/dimforge/rapier/issues/299).
 pub(super) fn cleanup_collisions_system(
-    removed_rigid_bodies: RemovedComponents<'_, RigidBody>,
+    mut removed_rigid_bodies: RemovedComponents<'_, '_, RigidBody>,
     mut collisions: Query<'_, '_, &mut Collisions>,
 ) {
     for rigid_body in removed_rigid_bodies.iter() {
@@ -98,8 +98,8 @@ mod tests {
         app.add_event::<CollisionEvent>()
             .add_system(update_collisions_system);
 
-        let entity1 = app.world.spawn().insert(Collisions::default()).id();
-        let entity2 = app.world.spawn().insert(Collisions::default()).id();
+        let entity1 = app.world.spawn(Collisions::default()).id();
+        let entity2 = app.world.spawn(Collisions::default()).id();
 
         let collision_data1 =
             CollisionData::new(entity1, Entity::from_raw(0), CollisionLayers::default(), []);
@@ -165,7 +165,7 @@ mod tests {
         app.add_event::<CollisionEvent>()
             .add_system(cleanup_collisions_system);
 
-        let removing_entity = app.world.spawn().insert(RigidBody::Static).id();
+        let removing_entity = app.world.spawn(RigidBody::Static).id();
         let mut collisions = Collisions::default();
         collisions.0.insert(
             removing_entity,
@@ -176,7 +176,7 @@ mod tests {
                 [],
             ),
         );
-        let entity = app.world.spawn().insert(collisions).id();
+        let entity = app.world.spawn(collisions).id();
 
         app.update();
 

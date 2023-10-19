@@ -7,7 +7,6 @@
 use core::any::Any;
 use std::sync::Arc;
 
-use bevy::ecs::schedule::ShouldRun;
 use bevy::prelude::*;
 
 #[cfg(feature = "collision-from-mesh")]
@@ -45,7 +44,7 @@ pub mod stage {
 /// Physics system labels
 ///
 /// The systems run during the bevy `CoreStage::PostUpdate` stage
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, SystemLabel)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash, SystemSet)]
 pub enum PhysicsSystem {
     /// System that update the [`Velocity`] component to reflect the velocity in the physics world
     VelocityUpdate,
@@ -80,11 +79,8 @@ impl Plugin for CorePlugin {
             .register_type::<SensorShape>()
             .register_type::<Collisions>()
             .add_system(collisions::update_collisions_system)
-            .add_system_to_stage(CoreStage::PostUpdate, collisions::cleanup_collisions_system)
-            .add_system_to_stage(CoreStage::First, PhysicsSteps::update)
-            .add_stage_before(CoreStage::PostUpdate, crate::stage::ROOT, {
-                Schedule::default().with_stage(crate::stage::UPDATE, SystemStage::parallel())
-            });
+            .add_systems(PostUpdate, collisions::cleanup_collisions_system)
+            .add_systems(First, PhysicsSteps::update);
 
         #[cfg(feature = "collision-from-mesh")]
         app.register_type::<PendingConvexCollision>()
@@ -97,12 +93,8 @@ impl Plugin for CorePlugin {
 pub fn should_run(
     physics_steps: Res<'_, PhysicsSteps>,
     physics_time: Res<'_, PhysicsTime>,
-) -> ShouldRun {
-    if physics_steps.is_step_frame() && physics_time.scale() > 0.0 {
-        ShouldRun::Yes
-    } else {
-        ShouldRun::No
-    }
+) -> bool {
+    physics_steps.is_step_frame() && physics_time.scale() > 0.0
 }
 
 /// An opaque type representing a custom collision shape.
@@ -111,12 +103,12 @@ pub fn should_run(
 /// what actual values will work depends on the backend, so see
 /// the relevant backend documentation to learn what types are accepted here.
 #[derive(Clone)]
-pub struct CustomCollisionShape(Arc<dyn Any + Send + Sync>, &'static str);
+pub struct CustomCollisionShape(Arc<dyn Any + Send + Sync>, String);
 
 impl CustomCollisionShape {
     /// Create a new [`CustomCollisionShape`] that wraps some value.
     pub fn new<T: Any + Send + Sync>(shape: T) -> Self {
-        Self(Arc::new(shape), std::any::type_name::<T>())
+        Self(Arc::new(shape), std::any::type_name::<T>().to_string())
     }
 
     /// Check if the stored value is of type `T`, and give a reference to it
@@ -234,15 +226,14 @@ pub enum CollisionShape {
         /// The radius of the base circle
         radius: f32,
     },
-
-    /// A Custom shape, the actual shape is abstracted, and will be determined
-    /// by a corresponding backend depending on the implementation details
-    ///
-    /// See [`CustomCollisionShape`] for more info.
-    Custom {
-        /// The custom collision shape to use
-        shape: CustomCollisionShape,
-    },
+    // /// A Custom shape, the actual shape is abstracted, and will be determined
+    // /// by a corresponding backend depending on the implementation details
+    // ///
+    // /// See [`CustomCollisionShape`] for more info.
+    // Custom {
+    //     /// The custom collision shape to use
+    //     shape: CustomCollisionShape,
+    // },
 }
 
 impl Default for CollisionShape {
