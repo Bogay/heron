@@ -29,10 +29,10 @@ enhanced-determinism = ["heron_rapier/enhanced-determinism"]
 bevy = { version = "0.11.0", default-features = false }
 
 [dependencies]
-heron_core = { version = "3.0.0", path = "core" }
-heron_macros = { version = "3.0.0", path = "macros" }
-heron_rapier = { version = "3.0.0", path = "rapier" }
-heron_debug = { version = "3.0.0", path = "debug", optional = true }
+heron_core = { path = "core" }
+heron_macros = { path = "macros" }
+heron_rapier = { path = "rapier" }
+heron_debug = { path = "debug", optional = true }
 bevy = { workspace = true }
 
 [dev-dependencies]

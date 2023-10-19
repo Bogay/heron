@@ -29,7 +29,7 @@ mod shape3d_wireframe;
 pub struct DebugPlugin(DebugColor);
 
 #[allow(dead_code)]
-#[derive(Debug, Copy, Clone)]
+#[derive(Resource, Debug, Copy, Clone)]
 struct DebugColor {
     sensor: Color,
     static_body: Color,
@@ -37,7 +37,8 @@ struct DebugColor {
     kinematic_body: Color,
 }
 
-type DebugEntityMap = FnvHashMap<Entity, Entity>;
+#[derive(Resource, Debug, Default)]
+struct DebugEntityMap(FnvHashMap<Entity, Entity>);
 
 #[allow(unused)]
 #[derive(Component)]
@@ -63,8 +64,7 @@ impl Plugin for DebugPlugin {
 
         app.insert_resource(self.0)
             .init_resource::<DebugEntityMap>()
-            .add_system_to_stage(CoreStage::Last, track_debug_entities)
-            .add_system_to_stage(CoreStage::Last, scale_debug_entities);
+            .add_systems(Last, (track_debug_entities, scale_debug_entities));
     }
 }
 
@@ -115,7 +115,7 @@ fn track_debug_entities(
     query: Query<'_, '_, (Entity, &IsDebug), Without<Indexed>>,
 ) {
     for (debug_entity, IsDebug(parent_entity)) in query.iter() {
-        map.insert(*parent_entity, debug_entity);
+        map.0.insert(*parent_entity, debug_entity);
         commands.entity(debug_entity).insert(Indexed);
     }
 }
